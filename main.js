@@ -6,9 +6,31 @@ window.jQuery = function(nodeOrSelector){
     return nodes;
 }
 
-window.jQuery.ajax = function(url,method,body,successFn,faliFn){
-    let request = new XMLHttpRequest();
+window.jQuery.ajax = function({url,method,body,successFn,faliFn,headers}){
+    let url;
+   if(arguments.length ===1){
+    url = options.url;
+   }else if(arguments.length ===2){
+    url = arguments[0];
+    options = arguments[1];
+   }
+
+   //es5
+    // let method = options.method;
+    // let body = options.body;
+    // let successFn = options.successFn;
+    // let faliFn = options.faliFn;
+    // let headers = options.headers;
+    // let request = new XMLHttpRequest();
+
+    //es6 解构赋值
+    // let {url,method,body,successFn,faliFn,headers} = options;
+    
     request.open(method,url);
+    for(let key in headers){
+        let value = headers[key];
+        request.setRequestHeader(key,value);
+    }
     request.onreadystatechange = () =>{
         if(request.readyState === 4){
             if(request.status>= 200){
@@ -21,19 +43,26 @@ window.jQuery.ajax = function(url,method,body,successFn,faliFn){
     request.send(body);
 }
 
-window.$ = window.jQuery;
-
-
-
-
-
-
+function f1(responseText){}
+function f2(responseText){}
 button.addEventListener('click',function(e){
-     window.jQuery.ajax(
-         '/xxx',
-         'post',
-         'a=1&b=2',
-         (responseText)=>{console.log(1)},
-         (request)=>{console.log(2)}
-         )
+     window.jQuery.ajax({
+            url:'/frank',
+            method:'get',
+            body:'a=1&b=2',
+            headers:{
+                'Content-Type':'application/x-www-form-url-encoded',
+                'frank':'18'
+            },
+            successFn:function(x){
+                f1.call(undefined,x);
+                f2.call(undefined,x);
+            },
+            faliFn:function(x){
+                console.log(x);
+                console.log(x.status);
+                console.log(request);
+            }
+        }   
+     )
 })
